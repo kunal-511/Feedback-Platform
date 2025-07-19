@@ -174,3 +174,28 @@ Comprehensive analytics dashboard featuring:
 - **Question Analytics**: Individual question performance
 - **Time-based Insights**: Response patterns over time
 - **Data Export**: CSV export for external analysis
+
+## Development Approach
+
+This project was built following a systematic, iterative approach that prioritized core functionality before adding advanced features:
+
+### Phase 1: Foundation Setup
+1. **Simple landing page Creation**: Started with a basic landing page layout
+2. **Authentication System**: Implemented secure user authentication using NextAuth.js with JWT tokens and bcrypt password hashing
+
+### Phase 2: Database & Backend
+3. **Database Setup**: Configured PostgreSQL with Prisma ORM, designed the schema for users, forms, questions, responses, and answers
+4. **Form Creation Frontend**: Built the interactive form builder interface with real-time preview and multiple question types
+
+### Phase 3: Core Features
+5. **Dashboard Frontend**: Developed the comprehensive dashboard for form management with status controls and overview statistics
+6. **CRUD API Routes**: Implemented RESTful API endpoints for complete form lifecycle management
+
+### Phase 4: Public Access & Analytics
+7. **Public Form Access**: Created public form rendering system with shareable URLs and mobile-optimized interface
+8. **Response Analytics Dashboard**: Built comprehensive analytics interface for response monitoring and insights
+
+### Phase 5: Data Export
+9. **CSV Export Feature**: Added data export functionality using the `csv-writer` library for external analysis and reporting
+
+
