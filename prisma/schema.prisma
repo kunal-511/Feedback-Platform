@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  name         String   @db.VarChar(255)
+  company      String?  @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+
+  forms Form[]
+
+  @@map("users")
+}
+
+
+model Form {
+  id          String     @id @default(uuid()) @db.Uuid
+  userId      String     @map("user_id") @db.Uuid
+  title       String     @db.VarChar(255)
+  description String?    @db.Text
+  status      FormStatus @default(DRAFT)
+  publicUrl   String     @unique @map("public_url") @db.VarChar(255)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions Question[]
+  responses Response[]
+
+  @@index([userId])
+  @@map("forms")
+}
+
+
+model Question {
+  id           String       @id @default(uuid()) @db.Uuid
+  formId       String       @map("form_id") @db.Uuid
+  questionText String       @map("question_text") @db.Text
+  questionType QuestionType @map("question_type")
+  isRequired   Boolean      @default(false) @map("is_required")
+  options      Json?        @db.JsonB 
+  orderIndex   Int          @map("order_index")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+
+  form    Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@index([formId])
+  @@map("questions")
+}
+
+
+model Response {
+  id          String   @id @default(uuid()) @db.Uuid
+  formId      String   @map("form_id") @db.Uuid
+  submittedAt DateTime @default(now()) @map("submitted_at")
+  ipAddress   String?  @map("ip_address") @db.Inet
+  userAgent   String?  @map("user_agent") @db.Text
+
+  form    Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  answers Answer[]
+
+  @@index([formId])
+  @@map("responses")
+}
+
+model Answer {
+  id         String   @id @default(uuid()) @db.Uuid
+  responseId String   @map("response_id") @db.Uuid
+  questionId String   @map("question_id") @db.Uuid
+  answerText String?  @map("answer_text") @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  response Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([responseId])
+  @@map("answers")
+}
+
+enum FormStatus {
+  DRAFT    @map("draft")
+  ACTIVE   @map("active")
+  INACTIVE @map("inactive")
+}
+
+enum QuestionType {
+  TEXT            @map("text")
+  TEXTAREA        @map("textarea")
+  MULTIPLE_CHOICE @map("multiple-choice")
+  RATING          @map("rating")
+}
